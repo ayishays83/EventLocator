@@ -1,0 +1,43 @@
+﻿@using EventLocator.Models
+@model List<EventPlanner>
+
+@{
+    ViewData["Title"] = "Nearby Event Planners";
+    var locationSet = ViewBag.LocationSet as bool? ?? false;
+}
+
+<h2>Nearby Event Planners</h2>
+
+@if (!Model.Any())
+{
+    <p>Loading location or no planners nearby...</p>
+}
+else
+{
+    <ul>
+        @foreach (var planner in Model)
+        {
+            <li><strong>@planner.Name</strong> - @planner.Address</li>
+        }
+    </ul>
+}
+
+@if (!locationSet)
+{
+    <script>
+        navigator.geolocation.getCurrentPosition(function (position) {
+            fetch('/Home/SetUserLocation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                })
+            }).then(() => {
+                location.reload(); // ✅ Only reload ONCE
+            });
+        });
+    </script>
+}
+
+
